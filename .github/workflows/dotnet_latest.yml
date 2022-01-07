@@ -12,7 +12,9 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
+env:
+  WEBAPP_NAME: MVCWebApp.sln     # set this to your application's name
+  WEBAPP_PACKAGE_PATH: 'published'      # set this to the path to your web app project, defaults to the repository root
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -35,4 +37,7 @@ jobs:
         run: nuget restore MVCWebApp.sln
         
       - name: Build Solution
-        run: msbuild MVCWebApp.sln
+        run: msbuild MVCWebApp.sln /p:Configuration=Release
+        
+      - name: Publish to folder
+        run: msbuild ${{ env.WEBAPP_NAME }} /p:Configuration=Release /p:DeployOnBuild=true /t:WebPublish /p:WebPublishMethod=FileSystem /p:publishUrl=${{ env.WEBAPP_PACKAGE_PATH }} /p:PackageAsSingleFile=false
